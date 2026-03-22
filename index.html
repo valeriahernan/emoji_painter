@@ -3,24 +3,28 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GIF Painter</title>
-<link rel="stylesheet" href="styles.css">
+<title>Emoji Painter</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div id="stage"></div>
-
-<!-- Toolbar flotante -->
 <div class="toolbar">
-  <img src="gifs/5.gif" onclick="setGif(0)">
-  <img src="gifs/2.gif" onclick="setGif(1)">
-  <img src="gifs/3.gif" onclick="setGif(2)">
-
-  <input id="sizeSlider" type="range" min="40" max="200" value="100">
-
-  <button onclick="clearStage()">Limpiar</button>
+    <button class="emoji-btn">🦄</button>
+    <button class="emoji-btn">🌸</button>
+    <button class="emoji-btn">🌈</button>
+    <button class="emoji-btn gif-btn" data-src="https://raw.githubusercontent.com/valeriahernan/emoji_painter/refs/heads/main/gifs/5.gif">
+        <img src="https://raw.githubusercontent.com/valeriahernan/emoji_painter/refs/heads/main/gifs/5.gif" alt="GIF 5">
+    </button>
+    <button class="emoji-btn gif-btn" data-src="https://raw.githubusercontent.com/valeriahernan/emoji_painter/refs/heads/main/gifs/2.gif">
+        <img src="https://raw.githubusercontent.com/valeriahernan/emoji_painter/refs/heads/main/gifs/2.gif" alt="GIF 2">
+    </button>
+    <button class="emoji-btn gif-btn" data-src="https://raw.githubusercontent.com/valeriahernan/emoji_painter/refs/heads/main/gifs/3.gif">
+        <img src="https://raw.githubusercontent.com/valeriahernan/emoji_painter/refs/heads/main/gifs/3.gif" alt="GIF 3">
+    </button>
 </div>
 
-<script src="app.js"></script>
+<canvas id="paintCanvas"></canvas>
+
+<script src="script.js"></script>
 </body>
 </html>
