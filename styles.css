@@ -7,35 +7,56 @@ body{
 
 .toolbar{
   position:fixed;
-  top:15px;
+  top:10px;
   left:50%;
   transform:translateX(-50%);
   display:flex;
-  gap:10px;
+  gap:8px;
   padding:10px;
   border-radius:20px;
   background:#ffffffee;
-  backdrop-filter:blur(10px);
   z-index:1000;
+  flex-wrap:wrap;
 }
 
 .gif-btn{
-  width:55px;
-  height:55px;
+  width:50px;
+  height:50px;
   object-fit:contain;
   background:white;
   padding:5px;
   border-radius:10px;
   cursor:pointer;
-  transition:0.2s;
 }
 
-.gif-btn:hover{
-  transform:scale(1.2);
+#brushes{
+  position:fixed;
+  top:80px;
+  left:50%;
+  transform:translateX(-50%);
+  display:flex;
+  gap:5px;
+  z-index:1000;
 }
 
-.active{
-  outline:3px solid #7acb88;
+.brush{
+  width:40px;
+  height:40px;
+  object-fit:contain;
+  border-radius:8px;
+  cursor:pointer;
+}
+
+.delete-btn{
+  position:absolute;
+  top:-5px;
+  right:-5px;
+  font-size:10px;
+  background:red;
+  color:white;
+  border:none;
+  border-radius:50%;
+  cursor:pointer;
 }
 
 #canvas{
@@ -61,16 +82,15 @@ body{
   animation:fallFade 1s ease-out forwards;
 }
 
+@keyframes spin{ to{ transform:rotate(360deg);} }
+@keyframes float{ 0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);} }
+@keyframes pulse{ 0%,100%{transform:scale(1);}50%{transform:scale(1.2);} }
+
 button{
   border:none;
   border-radius:10px;
-  padding:5px 12px;
+  padding:5px 10px;
   cursor:pointer;
   background:#7acb88;
   color:white;
-  font-weight:bold;
-}
-
-button:hover{
-  transform:scale(1.05);
 }
