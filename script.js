@@ -66,6 +66,24 @@ function getPointerPos(e){
   if(e.touches) return {x: e.touches[0].clientX, y: e.touches[0].clientY};
   else return {x: e.clientX, y: e.clientY};
 }
+// Fadebutn on off
+const fadeBtn = document.getElementById('fadeBtn');
+let fadeEnabled = true;
+
+fadeBtn.addEventListener('click', () => {
+  fadeEnabled = !fadeEnabled;
+  fadeBtn.textContent = `Fade: ${fadeEnabled ? 'ON' : 'OFF'}`;
+});
+
+//fade effect
+function fadeCanvas() {
+  if(fadeEnabled){
+    ctx.fillStyle = 'rgba(155, 89, 182, 0.05)'; // lila muy transparente
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  }
+  requestAnimationFrame(fadeCanvas);
+}
+fadeCanvas();
 
 canvas.addEventListener('mousedown', e => {isDrawing = true; draw(e.clientX, e.clientY)});
 canvas.addEventListener('mousemove', e => {if(isDrawing) draw(e.clientX, e.clientY)});
