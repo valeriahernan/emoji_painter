@@ -13,11 +13,17 @@ let isDrawing = false;
 
 // Ajusta canvas al tamaño de ventana
 function resizeCanvas() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
+  if(window.innerWidth < 768){ // móvil
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  } else { // PC
+    canvas.width = window.innerWidth * 0.8;
+    canvas.height = window.innerHeight * 0.8;
+    // opcional: centrar canvas en pantalla
+    canvas.style.margin = "auto";
+    canvas.style.display = "block";
+  }
 }
-window.addEventListener('resize', resizeCanvas);
-resizeCanvas();
 
 // Selección de GIFs
 gifButtons.forEach(btn => {
