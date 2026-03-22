@@ -13,7 +13,7 @@ resizeCanvas();
 let selectedEmoji = null;
 let isDrawing = false;
 
-// Botones
+// Toolbar botones
 document.querySelectorAll(".emoji-btn, .gif-btn").forEach(btn => {
     btn.addEventListener("click", () => {
         if (btn.classList.contains("gif-btn")) {
@@ -33,17 +33,23 @@ document.getElementById("newCanvas").addEventListener("click", () => {
 function draw(x, y) {
     if (!selectedEmoji) return;
 
-    let size = window.innerWidth < 600 ? 40 : 50;
+    // Tamaño proporcional
+    let size = window.innerWidth < 600 ? 35 : 55;
 
     if (selectedEmoji.startsWith("http")) {
-        const img = new Image();
-        img.src = selectedEmoji;
-        img.onload = () => {
-            ctx.drawImage(img, x - size / 2, y - size / 2, size, size);
-        };
+        // Crear un <img> flotante animado
+        const gif = document.createElement("img");
+        gif.src = selectedEmoji;
+        gif.style.position = "absolute";
+        gif.style.left = `${x - size/2}px`;
+        gif.style.top = `${y - size/2}px`;
+        gif.style.width = `${size}px`;
+        gif.style.height = "auto";
+        gif.style.pointerEvents = "none"; // no interfiere
+        document.body.appendChild(gif);
     } else {
         ctx.font = `${size}px serif`;
-        ctx.fillText(selectedEmoji, x - size / 2, y + size / 2);
+        ctx.fillText(selectedEmoji, x - size/2, y + size/2);
     }
 }
 
