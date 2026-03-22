@@ -1,31 +1,35 @@
 const canvas = document.getElementById("canvas");
 let drawing = false;
-let currentGif = document.querySelector(".gif-btn").src;
+let currentGif = document.querySelector(".gif-btn.active").src;
 let fadeEnabled = true;
 let customBrushes = [];
 const maxBrushes = 5;
 let lastX = 0;
 let lastY = 0;
 
-// Selección GIF toolbar
+const preview = document.getElementById("preview");
+
+// GIF toolbar selection
 document.querySelectorAll(".gif-btn").forEach(btn=>{
   btn.addEventListener("click",(e)=>{
     e.stopPropagation();
     document.querySelectorAll(".gif-btn").forEach(b=>b.classList.remove("active"));
     btn.classList.add("active");
     currentGif = btn.src;
+    preview.src = currentGif;
   });
 });
 
-// Subir GIF
+// Upload GIF/image
 document.getElementById("upload").addEventListener("change",(e)=>{
   const file = e.target.files[0];
   if(!file) return;
   const url = URL.createObjectURL(file);
   currentGif = url;
+  preview.src = currentGif;
 });
 
-// Guardar pincel
+// Save brush
 document.getElementById("saveBrush").addEventListener("click",()=>{
   if(customBrushes.length >= maxBrushes){
     alert("Máximo 5 pinceles");
@@ -36,7 +40,7 @@ document.getElementById("saveBrush").addEventListener("click",()=>{
   renderBrushes();
 });
 
-// Renderizar pinceles
+// Render custom brushes
 function renderBrushes(){
   const container = document.getElementById("brushes");
   container.innerHTML = "";
@@ -48,7 +52,7 @@ function renderBrushes(){
     const img = document.createElement("img");
     img.src = brush.src;
     img.className = "brush";
-    img.onclick = ()=>{ currentGif = brush.src; };
+    img.onclick = ()=>{ currentGif = brush.src; preview.src = currentGif; };
 
     const del = document.createElement("button");
     del.textContent = "✖";
@@ -66,7 +70,7 @@ function renderBrushes(){
   });
 }
 
-// Obtener posición
+// Pointer position
 function getPointerPosition(e){
   if(e.touches && e.touches.length > 0){
     return {x: e.touches[0].clientX, y: e.touches[0].clientY, pressure: e.touches[0].force || 1};
@@ -75,7 +79,7 @@ function getPointerPosition(e){
   }
 }
 
-// Dibujar
+// Draw
 function draw(e){
   const pos = getPointerPosition(e);
   const img = document.createElement("img");
@@ -98,7 +102,7 @@ function draw(e){
   lastY = pos.y;
 }
 
-// Eventos
+// Events
 canvas.addEventListener("pointerdown", (e)=>{ drawing=true; draw(e); });
 canvas.addEventListener("pointermove", (e)=>{ if(drawing) draw(e); });
 canvas.addEventListener("pointerup", ()=>drawing=false);
@@ -108,7 +112,7 @@ canvas.addEventListener("touchstart", (e)=>{ e.preventDefault(); drawing=true; d
 canvas.addEventListener("touchmove", (e)=>{ e.preventDefault(); if(drawing) draw(e); }, {passive:false});
 canvas.addEventListener("touchend", (e)=>{ drawing=false; }, {passive:false});
 
-// Botones
+// Buttons
 document.getElementById("clearBtn").onclick = ()=> canvas.innerHTML = "";
 document.getElementById("fadeBtn").onclick = (e)=>{
   fadeEnabled = !fadeEnabled;

@@ -8,21 +8,30 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 
-<link rel="stylesheet" href="styles.css?v=10">
+<link rel="stylesheet" href="styles.css?v=11">
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 </head>
 <body>
 
 <div id="wrapper">
   <div class="toolbar">
+    <!-- GIFs toolbar -->
     <img class="gif-btn active" src="https://raw.githubusercontent.com/valeriahernan/emoji_painter/refs/heads/main/gifs/5.gif">
     <img class="gif-btn" src="https://raw.githubusercontent.com/valeriahernan/emoji_painter/refs/heads/main/gifs/2.gif">
     <img class="gif-btn" src="https://raw.githubusercontent.com/valeriahernan/emoji_painter/refs/heads/main/gifs/3.gif">
     <img class="gif-btn" src="https://raw.githubusercontent.com/valeriahernan/emoji_painter/refs/heads/main/gifs/4.gif">
 
+    <!-- Preview del GIF seleccionado -->
+    <div id="previewContainer">
+      <span>Preview:</span>
+      <img id="preview" src="https://raw.githubusercontent.com/valeriahernan/emoji_painter/refs/heads/main/gifs/5.gif" alt="GIF seleccionado">
+    </div>
+
+    <!-- Slider y upload -->
     <input type="range" id="size" min="30" max="120" value="60">
     <input type="file" id="upload" accept="image/*">
 
+    <!-- Botones -->
     <button id="saveBrush">Guardar pincel</button>
     <button id="clearBtn">Limpiar</button>
     <button id="fadeBtn">Fade: ON</button>
