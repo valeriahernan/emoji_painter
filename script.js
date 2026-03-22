@@ -6,7 +6,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const gifButtons = document.querySelectorAll('.gif-btn');
   const sizeInput = document.getElementById('size');
   const uploadInput = document.getElementById('upload');
-  const effectSelect = document.getElementById('effectSelect');
   const clearBtn = document.getElementById('clearBtn');
   const fadeBtn = document.getElementById('fadeBtn');
   const saveImageBtn = document.getElementById('saveImage');
@@ -16,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let brushSize = parseInt(sizeInput.value);
   let isDrawing = false;
   let fadeEnabled = true;
-  
+
 function getPointerPos(e){
   const rect = canvas.getBoundingClientRect();
   if(e.touches) {
