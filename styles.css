@@ -13,42 +13,43 @@ body {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    background: linear-gradient(90deg, #9eeebf, #ce8bc8);
+    align-items: center;
+    background: #9eeebf;
     padding: 10px;
     position: sticky;
     top: 0;
     z-index: 100;
-    border-bottom: 3px solid #ce8bc8;
+    gap: 5px;
 }
 
 .tool-btn {
-    font-size: 30px;
-    margin: 5px;
-    padding: 5px;
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    min-height: 40px;
+    font-size: 16px;
+    background-color: #9eeebf;
     border: none;
-    border-radius: 12px;
-    background: #ffffffaa;
+    border-radius: 5px;
     cursor: pointer;
-    transition: transform 0.2s, background 0.2s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.tool-btn.active {
+    background-color: #ce8bc8;
 }
 
 .tool-btn:hover {
     transform: scale(1.2);
-    background: #ffffff;
-}
-
-.tool-btn img {
-    max-width: 50px;
-    max-height: 50px;
-    width: auto;
-    height: auto;
-    object-fit: contain;
 }
 
 canvas {
     display: block;
     width: 100%;
-    height: calc(100vh - 90px);
+    height: calc(100vh - 60px);
     touch-action: none;
     background: #ffffff;
     cursor: crosshair;

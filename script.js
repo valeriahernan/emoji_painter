@@ -1,7 +1,8 @@
 const canvas = document.getElementById("paintCanvas");
 const ctx = canvas.getContext("2d");
+const fileInput = document.getElementById("fileInput");
 
-// Ajustar tamaño del canvas
+// Ajustar tamaño canvas
 function resizeCanvas() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight - document.querySelector(".toolbar").offsetHeight;
@@ -9,69 +10,81 @@ function resizeCanvas() {
 window.addEventListener("resize", resizeCanvas);
 resizeCanvas();
 
-// Variables
-let selectedEmoji = null;
+let selectedSticker = null;
 let isDrawing = false;
+let gifAnimation = true; // si los GIFs se animan
 
-// Toolbar botones
+// Botones
 document.querySelectorAll(".emoji-btn, .gif-btn").forEach(btn => {
     btn.addEventListener("click", () => {
-        if (btn.classList.contains("gif-btn")) {
-            selectedEmoji = btn.dataset.src;
+        document.querySelectorAll(".tool-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+
+        if(btn.classList.contains("gif-btn")){
+            selectedSticker = btn.dataset.src;
         } else {
-            selectedEmoji = btn.textContent;
+            selectedSticker = btn.textContent;
         }
     });
 });
 
-// Nuevo lienzo
-document.getElementById("newCanvas").addEventListener("click", () => {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+// Toggle animación GIF
+document.getElementById("toggleGif").addEventListener("click", e => {
+    gifAnimation = !gifAnimation;
+    e.target.classList.toggle("active", gifAnimation);
 });
 
+// Subir imagen
+document.getElementById("uploadImage").addEventListener("click", () => fileInput.click());
+fileInput.addEventListener("change", e => {
+    const file = e.target.files[0];
+    if(!file) return;
+    const img = new Image();
+    img.src = URL.createObjectURL(file);
+    img.onload = () => { selectedSticker = img.src; fileInput.value = ''; };
+});
+
+// Nuevo lienzo
+document.getElementById("newCanvas").addEventListener("click", () => ctx.clearRect(0,0,canvas.width,canvas.height));
+
 // Dibujar
-function draw(x, y) {
-    if (!selectedEmoji) return;
+function draw(x,y){
+    if(!selectedSticker) return;
 
-    // Tamaño proporcional
-    let size = window.innerWidth < 600 ? 35 : 55;
+    let size = window.innerWidth < 600 ? 30 : 60;
 
-    if (selectedEmoji.startsWith("http")) {
-        // Crear un <img> flotante animado
+    if(selectedSticker.startsWith("http") && gifAnimation){
+        // GIF animado flotante
         const gif = document.createElement("img");
-        gif.src = selectedEmoji;
+        gif.src = selectedSticker;
         gif.style.position = "absolute";
         gif.style.left = `${x - size/2}px`;
         gif.style.top = `${y - size/2}px`;
         gif.style.width = `${size}px`;
         gif.style.height = "auto";
-        gif.style.pointerEvents = "none"; // no interfiere
+        gif.style.pointerEvents = "none";
         document.body.appendChild(gif);
     } else {
         ctx.font = `${size}px serif`;
-        ctx.fillText(selectedEmoji, x - size/2, y + size/2);
+        ctx.fillText(selectedSticker, x - size/2, y + size/2);
     }
 }
 
 // Eventos mouse
-canvas.addEventListener("mousedown", e => { isDrawing = true; draw(e.offsetX, e.offsetY); });
-canvas.addEventListener("mousemove", e => { if(isDrawing) draw(e.offsetX, e.offsetY); });
+canvas.addEventListener("mousedown", e => { isDrawing = true; draw(e.offsetX,e.offsetY); });
+canvas.addEventListener("mousemove", e => { if(isDrawing) draw(e.offsetX,e.offsetY); });
 canvas.addEventListener("mouseup", () => { isDrawing = false; });
 canvas.addEventListener("mouseleave", () => { isDrawing = false; });
 
 // Eventos touch
 canvas.addEventListener("touchstart", e => {
-    e.preventDefault();
-    isDrawing = true;
-    const touch = e.touches[0];
-    const rect = canvas.getBoundingClientRect();
-    draw(touch.clientX - rect.left, touch.clientY - rect.top);
+    e.preventDefault(); isDrawing=true;
+    const touch = e.touches[0]; const rect=canvas.getBoundingClientRect();
+    draw(touch.clientX-rect.left, touch.clientY-rect.top);
 });
 canvas.addEventListener("touchmove", e => {
-    e.preventDefault();
-    if (!isDrawing) return;
-    const touch = e.touches[0];
-    const rect = canvas.getBoundingClientRect();
-    draw(touch.clientX - rect.left, touch.clientY - rect.top);
+    e.preventDefault(); if(!isDrawing) return;
+    const touch = e.touches[0]; const rect=canvas.getBoundingClientRect();
+    draw(touch.clientX-rect.left, touch.clientY-rect.top);
 });
-canvas.addEventListener("touchend", () => { isDrawing = false; });
+canvas.addEventListener("touchend", () => { isDrawing=false; });
