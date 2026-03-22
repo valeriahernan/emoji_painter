@@ -13,8 +13,29 @@ resizeCanvas();
 let selectedSticker = null;
 let isDrawing = false;
 let gifAnimation = true; // si los GIFs se animan
+let history = []; // historial de deshacer
 
-// Botones
+// ===========================
+// Funciones historial
+// ===========================
+function saveState() {
+    history.push(canvas.toDataURL());
+}
+
+function undo() {
+    if(history.length === 0) return;
+    const lastState = history.pop();
+    const img = new Image();
+    img.src = lastState;
+    img.onload = () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0);
+    };
+}
+
+// ===========================
+// Botones de selección
+// ===========================
 document.querySelectorAll(".emoji-btn, .gif-btn").forEach(btn => {
     btn.addEventListener("click", () => {
         document.querySelectorAll(".tool-btn").forEach(b => b.classList.remove("active"));
@@ -44,12 +65,17 @@ fileInput.addEventListener("change", e => {
     img.onload = () => { selectedSticker = img.src; fileInput.value = ''; };
 });
 
-// Nuevo lienzo
-document.getElementById("newCanvas").addEventListener("click", () => ctx.clearRect(0,0,canvas.width,canvas.height));
+// Botón Deshacer (reemplaza New Canvas)
+const undoBtn = document.getElementById("newCanvas");
+undoBtn.textContent = "↩ Deshacer";
+undoBtn.addEventListener("click", undo);
 
+// ===========================
 // Dibujar
+// ===========================
 function draw(x,y){
     if(!selectedSticker) return;
+    saveState(); // Guardamos antes de dibujar cada sticker/GIF
 
     let size = window.innerWidth < 600 ? 30 : 60;
 
@@ -70,13 +96,17 @@ function draw(x,y){
     }
 }
 
+// ===========================
 // Eventos mouse
+// ===========================
 canvas.addEventListener("mousedown", e => { isDrawing = true; draw(e.offsetX,e.offsetY); });
 canvas.addEventListener("mousemove", e => { if(isDrawing) draw(e.offsetX,e.offsetY); });
 canvas.addEventListener("mouseup", () => { isDrawing = false; });
 canvas.addEventListener("mouseleave", () => { isDrawing = false; });
 
+// ===========================
 // Eventos touch
+// ===========================
 canvas.addEventListener("touchstart", e => {
     e.preventDefault(); isDrawing=true;
     const touch = e.touches[0]; const rect=canvas.getBoundingClientRect();
