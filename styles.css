@@ -37,6 +37,12 @@ body {
     align-items: center;
     transition: background 0.2s, transform 0.2s;
 }
+.gif-icon {
+    width: 10px;   /* tamaño del icono */
+    height: 10px;
+    object-fit: contain;
+    pointer-events: none; /* no interfiera con click del botón */
+}
 
 .tool-btn.active {
     background-color: #ce8bc8;
@@ -53,10 +59,4 @@ canvas {
     touch-action: none;
     background: #ffffff;
     cursor: crosshair;
-}
-.gif-icon {
-    width: 30px;   /* tamaño del icono */
-    height: 30px;
-    object-fit: contain;
-    pointer-events: none; /* no interfiera con click del botón */
 }
