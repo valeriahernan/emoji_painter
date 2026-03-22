@@ -12,9 +12,9 @@ if (!stage) {
 // GIFS (RUTA CORREGIDA)
 // =========================
 const gifSources = [
-  "./gifs/5.gif",
-  "./gifs/2.gif",
-  "./gifs/3.gif"
+  ".https://raw.githubusercontent.com/valeriahernan/emoji_painter/refs/heads/main/gifs/5.gif",
+  ".https://raw.githubusercontent.com/valeriahernan/emoji_painter/refs/heads/main/gifs/4.gif",
+  ".https://raw.githubusercontent.com/valeriahernan/emoji_painter/refs/heads/main/gifs/3.gif"
 ];
 
 // =========================
