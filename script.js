@@ -1,100 +1,96 @@
-const canvas = document.getElementById("gameCanvas");
+const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
-// Ajuste a pantalla real
-function resizeCanvas() {
+// Ajuste pantalla
+function resize() {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
 }
-resizeCanvas();
-window.addEventListener("resize", resizeCanvas);
+resize();
+window.addEventListener("resize", resize);
 
-// Variables de juego
-let brushSize = 80;
-let score = 0;
-let time = 30;
-let isPlaying = true;
+// GIFs
+const gifSources = [
+  "https://raw.githubusercontent.com/valeriahernan/emoji_painter/refs/heads/main/gifs/5.gif",
+  "https://raw.githubusercontent.com/valeriahernan/emoji_painter/refs/heads/main/gifs/2.gif",
+  "https://raw.githubusercontent.com/valeriahernan/emoji_painter/refs/heads/main/gifs/3.gif"
+];
 
-// GIF actual
-const gif = new Image();
-gif.src = "https://raw.githubusercontent.com/valeriahernan/emoji_painter/refs/heads/main/gifs/5.gif";
+const gifs = [];
+let gifsReady = false;
+
+// Cargar gifs correctamente
+let loaded = 0;
+
+gifSources.forEach(src => {
+  const img = new Image();
+  img.src = src;
+
+  img.onload = () => {
+    loaded++;
+    if (loaded === gifSources.length) {
+      gifsReady = true;
+      console.log("GIFs listos");
+    }
+  };
+
+  gifs.push(img);
+});
+
+// Estado
+let currentGif = 0;
+let brushSize = 100;
 
 // Dibujar
 function draw(x, y) {
-  if (!isPlaying) return;
+  if (!gifsReady) return;
 
-  ctx.drawImage(gif, x - brushSize/2, y - brushSize/2, brushSize, brushSize);
+  const img = gifs[currentGif];
 
-  score++;
-  document.getElementById("score").textContent = score;
+  ctx.drawImage(
+    img,
+    x - brushSize / 2,
+    y - brushSize / 2,
+    brushSize,
+    brushSize
+  );
 
-  // Vibración (si existe)
   if (navigator.vibrate) navigator.vibrate(5);
 }
 
-// Obtener posición touch
-function getTouchPos(e) {
-  const rect = canvas.getBoundingClientRect();
-  return {
-    x: e.touches[0].clientX - rect.left,
-    y: e.touches[0].clientY - rect.top
-  };
-}
-
-// Touch events
+// Touch
 canvas.addEventListener("touchstart", (e) => {
   e.preventDefault();
-  const pos = getTouchPos(e);
-  draw(pos.x, pos.y);
+  const t = e.touches[0];
+  draw(t.clientX, t.clientY);
 }, { passive: false });
 
 canvas.addEventListener("touchmove", (e) => {
   e.preventDefault();
-  const pos = getTouchPos(e);
-  draw(pos.x, pos.y);
+  const t = e.touches[0];
+  draw(t.clientX, t.clientY);
 }, { passive: false });
 
-// Mouse (por si usas PC)
+// Mouse
 canvas.addEventListener("mousemove", (e) => {
   if (e.buttons !== 1) return;
-  draw(e.offsetX, e.offsetY);
+  draw(e.clientX, e.clientY);
 });
 
-// Cambiar tamaño
+// UI
+function setGif(index) {
+  currentGif = index;
+}
+
 function changeSize(size) {
   brushSize = size;
 }
 
-// Limpiar
 function clearCanvas() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  score = 0;
-  document.getElementById("score").textContent = score;
 }
 
-// Timer
-function gameLoop() {
-  if (!isPlaying) return;
-
-  if (time > 0) {
-    time--;
-    document.getElementById("time").textContent = time;
-  } else {
-    isPlaying = false;
-    alert("🎮 Fin del juego! Puntaje: " + score);
-
-    // Reset
-    time = 30;
-    score = 0;
-    clearCanvas();
-    document.getElementById("time").textContent = time;
-    isPlaying = true;
-  }
-}
-
-setInterval(gameLoop, 1000);
-
-// Evitar scroll global
+// Bloquear scroll
 document.addEventListener("touchmove", function(e) {
   e.preventDefault();
 }, { passive: false });

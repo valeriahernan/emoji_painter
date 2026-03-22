@@ -3,25 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>GIF CHAOS</title>
+<title>Emoji Painter</title>
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-<!-- HUD -->
-<div id="hud">
-  <div>🎯 Puntaje: <span id="score">0</span></div>
-  <div>⏱️ Tiempo: <span id="time">30</span></div>
-</div>
+<canvas id="canvas"></canvas>
 
-<!-- Canvas -->
-<canvas id="gameCanvas"></canvas>
-
-<!-- Controles -->
+<!-- UI inferior -->
 <div class="toolbar">
-  <button onclick="changeSize(40)">S</button>
-  <button onclick="changeSize(80)">M</button>
-  <button onclick="changeSize(120)">L</button>
+  <button onclick="setGif(0)">😀</button>
+  <button onclick="setGif(1)">🔥</button>
+  <button onclick="setGif(2)">✨</button>
+  <button onclick="changeSize(60)">S</button>
+  <button onclick="changeSize(100)">M</button>
+  <button onclick="changeSize(140)">L</button>
   <button onclick="clearCanvas()">🧹</button>
 </div>
 
