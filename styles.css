@@ -4,7 +4,7 @@ body, html {
   padding: 0;
   height: 100%;
   font-family: 'Fredoka', sans-serif;
-  background: #76EEC6; /* verde agua */
+  background: #76EEC6;
 }
 
 #wrapper {
@@ -38,7 +38,9 @@ body, html {
   border: 2px solid #8e44ad;
 }
 
-.toolbar button, .toolbar input[type="file"] {
+.toolbar button, 
+.toolbar input[type="range"], 
+.toolbar input[type="file"] {
   padding: 6px 10px;
   border-radius: 5px;
   border: 1px solid #ccc;
@@ -100,9 +102,17 @@ footer {
   color: #333;
 }
 
-/* MOBILE ONLY: OCULTAR SLIDER */
-@media (pointer: coarse) {
-  #size {
-    display: none;
+/* RESPONSIVE MÓVIL */
+@media (max-width: 600px) {
+  .toolbar img.gif-btn,
+  .brush {
+    width: 50px;
+    height: 50px;
+  }
+  .toolbar button,
+  .toolbar input[type="range"],
+  .toolbar input[type="file"] {
+    padding: 6px 10px;
+    font-size: 14px;
   }
 }

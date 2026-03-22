@@ -7,7 +7,7 @@ const maxBrushes = 5;
 let lastX = 0;
 let lastY = 0;
 
-// GIF SELECTION
+// Selección GIF toolbar
 document.querySelectorAll(".gif-btn").forEach(btn=>{
   btn.addEventListener("click",(e)=>{
     e.stopPropagation();
@@ -17,7 +17,7 @@ document.querySelectorAll(".gif-btn").forEach(btn=>{
   });
 });
 
-// UPLOAD GIF
+// Subir GIF
 document.getElementById("upload").addEventListener("change",(e)=>{
   const file = e.target.files[0];
   if(!file) return;
@@ -25,7 +25,7 @@ document.getElementById("upload").addEventListener("change",(e)=>{
   currentGif = url;
 });
 
-// SAVE BRUSH
+// Guardar pincel
 document.getElementById("saveBrush").addEventListener("click",()=>{
   if(customBrushes.length >= maxBrushes){
     alert("Máximo 5 pinceles");
@@ -36,7 +36,7 @@ document.getElementById("saveBrush").addEventListener("click",()=>{
   renderBrushes();
 });
 
-// RENDER BRUSHES
+// Renderizar pinceles
 function renderBrushes(){
   const container = document.getElementById("brushes");
   container.innerHTML = "";
@@ -66,7 +66,7 @@ function renderBrushes(){
   });
 }
 
-// DRAWING
+// Obtener posición
 function getPointerPosition(e){
   if(e.touches && e.touches.length > 0){
     return {x: e.touches[0].clientX, y: e.touches[0].clientY, pressure: e.touches[0].force || 1};
@@ -75,16 +75,15 @@ function getPointerPosition(e){
   }
 }
 
+// Dibujar
 function draw(e){
   const pos = getPointerPosition(e);
   const img = document.createElement("img");
   img.className = "gif";
   img.src = currentGif;
 
-  // Si móvil, tamaño fijo + presión, si desktop slider
   let baseSize = window.matchMedia("(pointer: coarse)").matches ? 60 : document.getElementById("size").value;
-  let size = baseSize * (0.5 + pos.pressure);
-
+  let size = baseSize * (0.5 + (pos.pressure || 1));
   img.style.width = size + "px";
   img.style.left = pos.x + "px";
   img.style.top = pos.y + "px";
@@ -99,7 +98,7 @@ function draw(e){
   lastY = pos.y;
 }
 
-// EVENTS
+// Eventos
 canvas.addEventListener("pointerdown", (e)=>{ drawing=true; draw(e); });
 canvas.addEventListener("pointermove", (e)=>{ if(drawing) draw(e); });
 canvas.addEventListener("pointerup", ()=>drawing=false);
@@ -109,7 +108,7 @@ canvas.addEventListener("touchstart", (e)=>{ e.preventDefault(); drawing=true; d
 canvas.addEventListener("touchmove", (e)=>{ e.preventDefault(); if(drawing) draw(e); }, {passive:false});
 canvas.addEventListener("touchend", (e)=>{ drawing=false; }, {passive:false});
 
-// BUTTONS
+// Botones
 document.getElementById("clearBtn").onclick = ()=> canvas.innerHTML = "";
 document.getElementById("fadeBtn").onclick = (e)=>{
   fadeEnabled = !fadeEnabled;
@@ -124,7 +123,7 @@ document.getElementById("saveImage").onclick = ()=>{
   });
 };
 
-// LOCAL STORAGE
+// Local Storage
 function saveToStorage(){ localStorage.setItem("brushes", JSON.stringify(customBrushes)); }
 function loadFromStorage(){
   const data = localStorage.getItem("brushes");
