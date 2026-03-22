@@ -3,24 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>Emoji Painter</title>
+<title>GIF Painter</title>
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-<!-- Zona de dibujo -->
-<div id="stage"></div>
-
-<!-- UI mínima -->
+<!-- Toolbar superior -->
 <div class="toolbar">
-  <button onclick="setGif(0)">😀</button>
-  <button onclick="setGif(1)">🔥</button>
-  <button onclick="setGif(2)">✨</button>
-  <button onclick="changeSize(60)">S</button>
-  <button onclick="changeSize(100)">M</button>
-  <button onclick="changeSize(140)">L</button>
+  <img src="gifs/5.gif" onclick="setGif(0)">
+  <img src="gifs/2.gif" onclick="setGif(1)">
+  <img src="gifs/3.gif" onclick="setGif(2)">
+
+  <!-- SOLO DESKTOP -->
+  <input id="sizeSlider" type="range" min="40" max="200" value="100">
+  
   <button onclick="clearStage()">🧹</button>
 </div>
+
+<!-- Zona dibujo -->
+<div id="stage"></div>
 
 <script src="app.js"></script>
 </body>

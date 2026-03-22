@@ -1,137 +1,104 @@
-// =========================
-// ELEMENTO PRINCIPAL
-// =========================
 const stage = document.getElementById("stage");
+const slider = document.getElementById("sizeSlider");
 
-// Verificación crítica
-if (!stage) {
-  console.error("❌ ERROR: #stage no existe en el HTML");
-}
-
-// =========================
-// GIFS (RUTA CORREGIDA)
-// =========================
+// GIFs
 const gifSources = [
-  ".https://raw.githubusercontent.com/valeriahernan/emoji_painter/refs/heads/main/gifs/5.gif",
-  ".https://raw.githubusercontent.com/valeriahernan/emoji_painter/refs/heads/main/gifs/4.gif",
-  ".https://raw.githubusercontent.com/valeriahernan/emoji_painter/refs/heads/main/gifs/3.gif"
+  "https://raw.githubusercontent.com/valeriahernan/emoji_painter/refs/heads/main/gifs/5.gif",
+  "https://raw.githubusercontent.com/valeriahernan/emoji_painter/refs/heads/main/gifs/4.gif",
+  "https://raw.githubusercontent.com/valeriahernan/emoji_painter/refs/heads/main/gifs/3.gif"
 ];
 
-// =========================
-// PRECARGA (CLAVE)
-// =========================
+// Precarga
 const gifs = [];
 let gifsReady = false;
 let loaded = 0;
 
-gifSources.forEach((src, i) => {
+gifSources.forEach(src => {
   const img = new Image();
-
   img.onload = () => {
     loaded++;
-    console.log("✅ GIF cargado:", src);
-
-    if (loaded === gifSources.length) {
-      gifsReady = true;
-      console.log("🔥 TODOS LOS GIFS LISTOS");
-    }
+    if (loaded === gifSources.length) gifsReady = true;
   };
-
-  img.onerror = () => {
-    console.error("❌ ERROR cargando:", src);
-  };
-
   img.src = src;
   gifs.push(img);
 });
 
-// =========================
-// ESTADO
-// =========================
+// Estado
 let currentGif = 0;
-let brushSize = 100;
 let lastDraw = 0;
+let baseSize = 100;
 const maxStamps = 250;
 
-// =========================
-// DIBUJO (FLUIDO)
-// =========================
-function draw(x, y) {
-  if (!gifsReady) return; // 🔥 evita bug de carga
+// Detectar mobile
+const isMobile = window.innerWidth <= 768;
+
+// Dibujar
+function draw(x, y, pressure = 0.5) {
+  if (!gifsReady) return;
 
   const now = Date.now();
   if (now - lastDraw < 25) return;
   lastDraw = now;
 
-  // Limitar elementos
   const stamps = document.querySelectorAll(".stamp");
-  if (stamps.length > maxStamps) {
-    stamps[0].remove();
-  }
+  if (stamps.length > maxStamps) stamps[0].remove();
 
   const img = document.createElement("img");
-
-  // 🔥 usar imagen precargada (más rápido)
   img.src = gifs[currentGif].src;
-
   img.className = "stamp";
 
-  img.style.position = "absolute";
-  img.style.left = (x - brushSize / 2) + "px";
-  img.style.top = (y - brushSize / 2) + "px";
-  img.style.width = brushSize + "px";
+  let size;
 
-  // rotación
-  const rot = Math.random() * 20 - 10;
+  if (isMobile) {
+    // 📱 tamaño por presión (si existe)
+    size = 50 + pressure * 150;
+  } else {
+    // 💻 tamaño por slider
+    size = slider.value;
+  }
+
+  img.style.left = (x - size / 2) + "px";
+  img.style.top = (y - size / 2) + "px";
+  img.style.width = size + "px";
+
+  const rot = Math.random() * 30 - 15;
   img.style.transform = `rotate(${rot}deg)`;
 
   stage.appendChild(img);
 
-  // vibración
   if (navigator.vibrate) navigator.vibrate(5);
 }
 
-// =========================
-// TOUCH
-// =========================
-stage.addEventListener("touchstart", (e) => {
-  e.preventDefault();
-  const t = e.touches[0];
-  draw(t.clientX, t.clientY);
-}, { passive: false });
-
+// TOUCH (con presión)
 stage.addEventListener("touchmove", (e) => {
   e.preventDefault();
   const t = e.touches[0];
-  draw(t.clientX, t.clientY);
+
+  const pressure = t.force || 0.5; // fallback si no hay presión
+
+  draw(t.clientX, t.clientY, pressure);
 }, { passive: false });
 
-// =========================
+stage.addEventListener("touchstart", (e) => {
+  e.preventDefault();
+  const t = e.touches[0];
+  draw(t.clientX, t.clientY, t.force || 0.5);
+}, { passive: false });
+
 // MOUSE
-// =========================
 stage.addEventListener("mousemove", (e) => {
   if (e.buttons !== 1) return;
-  draw(e.clientX, e.clientY);
+  draw(e.clientX, e.clientY, 0.5);
 });
 
-// =========================
 // UI
-// =========================
-function setGif(index) {
-  currentGif = index;
-}
-
-function changeSize(size) {
-  brushSize = size;
+function setGif(i) {
+  currentGif = i;
 }
 
 function clearStage() {
   stage.innerHTML = "";
 }
 
-// =========================
-// BLOQUEAR SCROLL
-// =========================
-document.addEventListener("touchmove", function(e) {
-  e.preventDefault();
-}, { passive: false });
+// Bloquear scroll
+document.addEventListener("touchmove", e => e.preventDefault(), { passive: false });
