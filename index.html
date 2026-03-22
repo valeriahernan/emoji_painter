@@ -8,9 +8,10 @@
 </head>
 <body>
 
-<canvas id="canvas"></canvas>
+<!-- Zona de dibujo -->
+<div id="stage"></div>
 
-<!-- UI inferior -->
+<!-- UI mínima -->
 <div class="toolbar">
   <button onclick="setGif(0)">😀</button>
   <button onclick="setGif(1)">🔥</button>
@@ -18,7 +19,7 @@
   <button onclick="changeSize(60)">S</button>
   <button onclick="changeSize(100)">M</button>
   <button onclick="changeSize(140)">L</button>
-  <button onclick="clearCanvas()">🧹</button>
+  <button onclick="clearStage()">🧹</button>
 </div>
 
 <script src="app.js"></script>

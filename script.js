@@ -1,78 +1,63 @@
-const canvas = document.getElementById("canvas");
-const ctx = canvas.getContext("2d");
+const stage = document.getElementById("stage");
 
-// Ajuste pantalla
-function resize() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-}
-resize();
-window.addEventListener("resize", resize);
-
-// GIFs
+// GIFs (usa archivos locales en /gifs/)
 const gifSources = [
-  "https://raw.githubusercontent.com/valeriahernan/emoji_painter/refs/heads/main/gifs/5.gif",
-  "https://raw.githubusercontent.com/valeriahernan/emoji_painter/refs/heads/main/gifs/2.gif",
-  "https://raw.githubusercontent.com/valeriahernan/emoji_painter/refs/heads/main/gifs/3.gif"
+  "gifs/5.gif",
+  "gifs/2.gif",
+  "gifs/3.gif"
 ];
-
-const gifs = [];
-let gifsReady = false;
-
-// Cargar gifs correctamente
-let loaded = 0;
-
-gifSources.forEach(src => {
-  const img = new Image();
-  img.src = src;
-
-  img.onload = () => {
-    loaded++;
-    if (loaded === gifSources.length) {
-      gifsReady = true;
-      console.log("GIFs listos");
-    }
-  };
-
-  gifs.push(img);
-});
 
 // Estado
 let currentGif = 0;
 let brushSize = 100;
+let lastDraw = 0;
+const maxStamps = 250;
 
-// Dibujar
+// Dibujar (FLUIDO)
 function draw(x, y) {
-  if (!gifsReady) return;
+  const now = Date.now();
+  if (now - lastDraw < 25) return; // suaviza
+  lastDraw = now;
 
-  const img = gifs[currentGif];
+  // Limitar cantidad (rendimiento)
+  const stamps = document.querySelectorAll(".stamp");
+  if (stamps.length > maxStamps) {
+    stamps[0].remove();
+  }
 
-  ctx.drawImage(
-    img,
-    x - brushSize / 2,
-    y - brushSize / 2,
-    brushSize,
-    brushSize
-  );
+  const img = document.createElement("img");
+  img.src = gifSources[currentGif];
+  img.className = "stamp";
 
+  img.style.left = (x - brushSize / 2) + "px";
+  img.style.top = (y - brushSize / 2) + "px";
+  img.style.width = brushSize + "px";
+
+  // leve rotación
+  const rot = Math.random() * 20 - 10;
+  img.style.transform = `rotate(${rot}deg)`;
+
+  stage.appendChild(img);
+
+  // vibración (si existe)
   if (navigator.vibrate) navigator.vibrate(5);
 }
 
-// Touch
-canvas.addEventListener("touchstart", (e) => {
+// TOUCH
+stage.addEventListener("touchstart", (e) => {
   e.preventDefault();
   const t = e.touches[0];
   draw(t.clientX, t.clientY);
 }, { passive: false });
 
-canvas.addEventListener("touchmove", (e) => {
+stage.addEventListener("touchmove", (e) => {
   e.preventDefault();
   const t = e.touches[0];
   draw(t.clientX, t.clientY);
 }, { passive: false });
 
-// Mouse
-canvas.addEventListener("mousemove", (e) => {
+// MOUSE
+stage.addEventListener("mousemove", (e) => {
   if (e.buttons !== 1) return;
   draw(e.clientX, e.clientY);
 });
@@ -86,8 +71,8 @@ function changeSize(size) {
   brushSize = size;
 }
 
-function clearCanvas() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+function clearStage() {
+  stage.innerHTML = "";
 }
 
 // Bloquear scroll
