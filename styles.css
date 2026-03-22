@@ -18,16 +18,16 @@ body, html {
 .toolbar {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  padding: 8px;
+  gap: 6px;
+  padding: 6px;
   background: rgba(255,255,255,0.3);
   justify-content: center;
   align-items: center;
 }
 
 .toolbar img.gif-btn {
-  width: 40px;
-  height: 40px;
+  width: 50px;
+  height: 50px;
   cursor: pointer;
   border-radius: 5px;
   border: 2px solid transparent;
@@ -35,13 +35,11 @@ body, html {
 }
 
 .toolbar img.gif-btn.active {
-  border: 2px solid #8e44ad; /* lila al seleccionar */
+  border: 2px solid #8e44ad;
 }
 
-.toolbar button, 
-.toolbar input[type="range"], 
-.toolbar input[type="file"] {
-  padding: 5px 8px;
+.toolbar button, .toolbar input[type="file"] {
+  padding: 6px 10px;
   border-radius: 5px;
   border: 1px solid #ccc;
   cursor: pointer;
@@ -53,7 +51,7 @@ body, html {
   flex: 1;
   width: 100%;
   overflow: hidden;
-  touch-action: none; /* evita scroll al pintar en móvil */
+  touch-action: none;
 }
 
 .gif {
@@ -72,8 +70,8 @@ body, html {
 }
 
 .brush {
-  width: 40px;
-  height: 40px;
+  width: 50px;
+  height: 50px;
   border-radius: 5px;
   cursor: pointer;
 }
@@ -102,17 +100,9 @@ footer {
   color: #333;
 }
 
-/* RESPONSIVE MÓVIL */
-@media (max-width: 600px) {
-  .toolbar img.gif-btn,
-  .brush {
-    width: 50px;
-    height: 50px;
-  }
-  .toolbar button,
-  .toolbar input[type="range"],
-  .toolbar input[type="file"] {
-    padding: 6px 10px;
-    font-size: 14px;
+/* MOBILE ONLY: OCULTAR SLIDER */
+@media (pointer: coarse) {
+  #size {
+    display: none;
   }
 }
