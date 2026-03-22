@@ -2,7 +2,7 @@ html, body {
   margin: 0;
   padding: 0;
   overflow: hidden;
-  background: #111;
+  background: white; /* 👈 fondo blanco */
   touch-action: none;
   font-family: sans-serif;
 }
@@ -11,13 +11,15 @@ html, body {
 .toolbar {
   position: fixed;
   top: 0;
+  left: 0;
   width: 100%;
+  height: 60px;
   display: flex;
   align-items: center;
   gap: 10px;
   padding: 8px;
   background: rgba(0,0,0,0.8);
-  z-index: 10;
+  z-index: 100;
 }
 
 /* GIF botones */
@@ -25,6 +27,7 @@ html, body {
   width: 50px;
   height: 50px;
   border-radius: 10px;
+  cursor: pointer;
 }
 
 /* Slider */
@@ -42,20 +45,28 @@ html, body {
 /* Área dibujo */
 #stage {
   position: fixed;
-  top: 0;
+  top: 60px; /* 👈 clave */
   left: 0;
   width: 100%;
-  height: 100%;
+  height: calc(100% - 60px);
+  z-index: 1;
 }
 
-/* GIF pintado */
+/* GIFs dibujados */
 .stamp {
   position: absolute;
   pointer-events: none;
+  z-index: 10;
   animation: pop 0.15s ease;
 }
 
 @keyframes pop {
-  from { transform: scale(0.6); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
+  from {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }

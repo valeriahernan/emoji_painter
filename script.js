@@ -1,7 +1,7 @@
 const stage = document.getElementById("stage");
 const slider = document.getElementById("sizeSlider");
 
-// GIFs
+// GIFs locales
 const gifSources = [
   "./gifs/5.gif",
   "./gifs/2.gif",
@@ -17,7 +17,13 @@ gifSources.forEach(src => {
   const img = new Image();
   img.onload = () => {
     loaded++;
-    if (loaded === gifSources.length) gifsReady = true;
+    if (loaded === gifSources.length) {
+      gifsReady = true;
+      console.log("GIFs listos");
+    }
+  };
+  img.onerror = () => {
+    console.error("Error cargando:", src);
   };
   img.src = src;
   gifs.push(img);
@@ -26,13 +32,10 @@ gifSources.forEach(src => {
 // Estado
 let currentGif = 0;
 let lastDraw = 0;
-let baseSize = 100;
 const maxStamps = 250;
-
-// Detectar mobile
 const isMobile = window.innerWidth <= 768;
 
-// Dibujar
+// Dibujar (CORREGIDO)
 function draw(x, y, pressure = 0.5) {
   if (!gifsReady) return;
 
@@ -40,6 +43,12 @@ function draw(x, y, pressure = 0.5) {
   if (now - lastDraw < 25) return;
   lastDraw = now;
 
+  // Ajuste de coordenadas (🔥 clave)
+  const rect = stage.getBoundingClientRect();
+  const posX = x - rect.left;
+  const posY = y - rect.top;
+
+  // Limitar elementos
   const stamps = document.querySelectorAll(".stamp");
   if (stamps.length > maxStamps) stamps[0].remove();
 
@@ -50,15 +59,13 @@ function draw(x, y, pressure = 0.5) {
   let size;
 
   if (isMobile) {
-    // 📱 tamaño por presión (si existe)
-    size = 50 + pressure * 150;
+    size = 60 + pressure * 120;
   } else {
-    // 💻 tamaño por slider
     size = slider.value;
   }
 
-  img.style.left = (x - size / 2) + "px";
-  img.style.top = (y - size / 2) + "px";
+  img.style.left = (posX - size / 2) + "px";
+  img.style.top = (posY - size / 2) + "px";
   img.style.width = size + "px";
 
   const rot = Math.random() * 30 - 15;
@@ -69,17 +76,14 @@ function draw(x, y, pressure = 0.5) {
   if (navigator.vibrate) navigator.vibrate(5);
 }
 
-// TOUCH (con presión)
-stage.addEventListener("touchmove", (e) => {
+// TOUCH
+stage.addEventListener("touchstart", (e) => {
   e.preventDefault();
   const t = e.touches[0];
-
-  const pressure = t.force || 0.5; // fallback si no hay presión
-
-  draw(t.clientX, t.clientY, pressure);
+  draw(t.clientX, t.clientY, t.force || 0.5);
 }, { passive: false });
 
-stage.addEventListener("touchstart", (e) => {
+stage.addEventListener("touchmove", (e) => {
   e.preventDefault();
   const t = e.touches[0];
   draw(t.clientX, t.clientY, t.force || 0.5);
