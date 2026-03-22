@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-
   const canvas = document.getElementById('canvas');
   const ctx = canvas.getContext('2d');
 
@@ -15,32 +14,17 @@ document.addEventListener('DOMContentLoaded', () => {
   let isDrawing = false;
   let fadeEnabled = true;
 
-  // Obtener posición relativa al canvas
-  function getPointerPos(e){
-    const rect = canvas.getBoundingClientRect();
-    if(e.touches){
-      return {
-        x: e.touches[0].clientX - rect.left,
-        y: e.touches[0].clientY - rect.top
-      };
-    } else {
-      return {
-        x: e.clientX - rect.left,
-        y: e.clientY - rect.top
-      };
-    }
-  }
+  // Mantener instancias activas de GIFs animados
+  const gifsActivos = [];
 
   // Ajustar canvas
   function resizeCanvas() {
     if(window.innerWidth < 768){
       canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      canvas.height = window.innerHeight - 60;
     } else {
       canvas.width = window.innerWidth * 0.8;
       canvas.height = window.innerHeight * 0.8;
-      canvas.style.margin = "auto";
-      canvas.style.display = "block";
     }
   }
   window.addEventListener('resize', resizeCanvas);
@@ -55,19 +39,15 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Cambiar tamaño del pincel
   sizeInput.addEventListener('input', () => { brushSize = parseInt(sizeInput.value); });
 
-  // Limpiar canvas
   clearBtn.addEventListener('click', () => ctx.clearRect(0,0,canvas.width,canvas.height));
 
-  // Toggle fade
   fadeBtn.addEventListener('click', () => {
     fadeEnabled = !fadeEnabled;
     fadeBtn.textContent = `Fade: ${fadeEnabled ? 'ON' : 'OFF'}`;
   });
 
-  // Guardar imagen
   saveImageBtn.addEventListener('click', () => {
     const link = document.createElement('a');
     link.download = 'mi_dibujo.png';
@@ -75,7 +55,6 @@ document.addEventListener('DOMContentLoaded', () => {
     link.click();
   });
 
-  // Subir imagen
   uploadInput.addEventListener('change', e => {
     const file = e.target.files[0];
     if(!file) return;
@@ -84,56 +63,51 @@ document.addEventListener('DOMContentLoaded', () => {
     img.src = URL.createObjectURL(file);
   });
 
-  // Dibujar GIF como pincel (frame estático)
-  function draw(x, y){
-    const img = new Image();
-    img.src = currentGIF;
-    img.onload = () => {
-      ctx.drawImage(img, x - brushSize/2, y - brushSize/2, brushSize, brushSize);
-    };
+  // Obtener posición relativa al canvas
+  function getPointerPos(e){
+    const rect = canvas.getBoundingClientRect();
+    if(e.touches){
+      return { x: e.touches[0].clientX - rect.left, y: e.touches[0].clientY - rect.top };
+    } else {
+      return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+    }
+  }
+
+  // Crear nueva instancia GIF animada
+  function drawAnimatedGIF(x, y){
+    gifler(currentGIF).get(anim => {
+      gifsActivos.push({anim, x, y, size: brushSize});
+    });
   }
 
   // Eventos de dibujo
-  canvas.addEventListener('mousedown', e => {
-    isDrawing = true;
-    const pos = getPointerPos(e);
-    draw(pos.x, pos.y);
-  });
-  canvas.addEventListener('mousemove', e => {
-    if(isDrawing){
-      const pos = getPointerPos(e);
-      draw(pos.x, pos.y);
-    }
-  });
-  canvas.addEventListener('mouseup', () => {isDrawing = false});
-  canvas.addEventListener('mouseleave', () => {isDrawing = false});
+  canvas.addEventListener('mousedown', e => { isDrawing = true; const pos = getPointerPos(e); drawAnimatedGIF(pos.x,pos.y); });
+  canvas.addEventListener('mousemove', e => { if(isDrawing){ const pos = getPointerPos(e); drawAnimatedGIF(pos.x,pos.y); } });
+  canvas.addEventListener('mouseup', () => { isDrawing = false; });
+  canvas.addEventListener('mouseleave', () => { isDrawing = false; });
 
-  canvas.addEventListener('touchstart', e => {
-    e.preventDefault();
-    isDrawing = true;
-    const pos = getPointerPos(e);
-    draw(pos.x, pos.y);
-  });
-  canvas.addEventListener('touchmove', e => {
-    e.preventDefault();
-    if(isDrawing){
-      const pos = getPointerPos(e);
-      draw(pos.x, pos.y);
-    }
-  });
-  canvas.addEventListener('touchend', e => {
-    e.preventDefault();
-    isDrawing = false;
-  });
+  canvas.addEventListener('touchstart', e => { e.preventDefault(); isDrawing = true; const pos=getPointerPos(e); drawAnimatedGIF(pos.x,pos.y); });
+  canvas.addEventListener('touchmove', e => { e.preventDefault(); if(isDrawing){ const pos=getPointerPos(e); drawAnimatedGIF(pos.x,pos.y); } });
+  canvas.addEventListener('touchend', e => { e.preventDefault(); isDrawing = false; });
 
-  // Loop de fade
-  function fadeCanvas() {
+  // Loop de render de GIFs animados + fade
+  function render(){
     if(fadeEnabled){
-      ctx.fillStyle = 'rgba(155, 89, 182, 0.05)'; 
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = 'rgba(206,139,200,0.05)'; // fade color
+      ctx.fillRect(0,0,canvas.width,canvas.height);
     }
-    requestAnimationFrame(fadeCanvas);
-  }
-  fadeCanvas();
 
+    gifsActivos.forEach(g => {
+      g.anim.animateInCanvas({
+        canvas: canvas,
+        x: g.x - g.size/2,
+        y: g.y - g.size/2,
+        width: g.size,
+        height: g.size
+      });
+    });
+
+    requestAnimationFrame(render);
+  }
+  render();
 });

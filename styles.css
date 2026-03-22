@@ -1,68 +1,62 @@
-/* General */
-body, html {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  background-color: #9b59b6; /* Fondo lila */
-  touch-action: none; /* Evita scroll en móviles */
-  overscroll-behavior: none;
-  user-select: none;
+* {
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body {
+  background-color: #9eeebf; /* fondo */
+  font-family: sans-serif;
+}
+
+#toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px;
+  background: #ce8bc8; /* color barra */
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 10;
+  border-radius: 0 0 10px 10px;
+}
+
+#gifContainer {
+  display: flex;
+  gap: 5px;
+}
+
+.gif-btn {
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  border: 2px solid green;
+  border-radius: 5px;
+}
+
+.gif-btn.active {
+  border-color: purple;
+}
+
+#size {
+  width: 100px;
+}
+
+button {
+  padding: 5px 10px;
+  cursor: pointer;
+  background: #ce8bc8;
+  border: none;
+  border-radius: 5px;
+  color: #fff;
+  font-weight: bold;
 }
 
 canvas {
   display: block;
-  width: 100%;
-  height: 100%;
-  touch-action: none; /* Evita scroll al dibujar */
-}
-
-/* Toolbar */
-.toolbar {
-  position: fixed;
-  bottom: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  padding: 5px 10px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 15px;
-  z-index: 1000;
-  justify-content: center;
-}
-
-/* GIF buttons */
-.gif-btn {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: 2px solid transparent;
-  cursor: pointer;
-  transition: 0.2s;
-  background-color: #1abc9c; /* Verde agua */
-}
-
-.gif-btn.active {
-  border-color: #8e44ad; /* Lila al seleccionar */
-}
-
-/* Otros botones */
-button, select, input[type="range"], input[type="file"] {
-  cursor: pointer;
-  border-radius: 8px;
-  border: none;
-  padding: 5px;
-  background-color: #1abc9c; /* Verde agua */
-  color: white;
-  font-weight: bold;
-  transition: 0.2s;
-}
-
-button:hover, select:hover, input[type="range"]:hover, input[type="file"]:hover {
-  background-color: #16a085;
-}
-
-button:active, select:active, input[type="range"]:active, input[type="file"]:active {
-  background-color: #8e44ad; /* Lila al hacer click */
+  margin: 60px auto 0 auto; /* deja espacio para toolbar */
+  background: #9eeebf;
+  touch-action: none;
 }

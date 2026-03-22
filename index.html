@@ -1,35 +1,29 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Emoji/GIF Painter</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Emoji Painter</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/gifler/dist/gifler.min.js"></script>
 </head>
 <body>
+  <div id="toolbar">
+    <div id="gifContainer">
+      <img class="gif-btn active" src="https://raw.githubusercontent.com/valeriahernan/emoji_painter/refs/heads/main/gifs/5.gif" alt="GIF 5">
+      <img class="gif-btn" src="https://raw.githubusercontent.com/valeriahernan/emoji_painter/refs/heads/main/gifs/2.gif" alt="GIF 2">
+      <img class="gif-btn" src="https://raw.githubusercontent.com/valeriahernan/emoji_painter/refs/heads/main/gifs/3.gif" alt="GIF 3">
+      <img class="gif-btn" src="https://raw.githubusercontent.com/valeriahernan/emoji_painter/refs/heads/main/gifs/4.gif" alt="GIF 4">
+    </div>
+    <input type="range" id="size" min="10" max="100" value="30">
+    <input type="file" id="upload" accept="image/*">
+    <button id="clearBtn">Limpiar</button>
+    <button id="fadeBtn">Fade: ON</button>
+    <button id="saveImage">Guardar</button>
+  </div>
 
-<!-- Toolbar con GIFs y controles -->
-<div class="toolbar">
-  <img class="gif-btn active" src="https://raw.githubusercontent.com/valeriahernan/emoji_painter/refs/heads/main/gifs/5.gif">
-  <img class="gif-btn" src="https://raw.githubusercontent.com/valeriahernan/emoji_painter/refs/heads/main/gifs/2.gif">
-  <img class="gif-btn" src="https://raw.githubusercontent.com/valeriahernan/emoji_painter/refs/heads/main/gifs/3.gif">
-  <img class="gif-btn" src="https://raw.githubusercontent.com/valeriahernan/emoji_painter/refs/heads/main/gifs/4.gif">
+  <canvas id="canvas"></canvas>
 
-  <input type="range" id="size" min="30" max="120" value="60">
-
-  <input type="file" id="upload" accept="image/*">
-
-  <button id="saveBrush">Guardar pincel</button>
-  <button id="clearBtn">Limpiar</button>
-  <button id="fadeBtn">Fade: ON</button>
-  <button id="saveImage">Guardar</button>
-<!-- <button id="shareBtn">Compartir</button>-->
-</div>
-
-<div id="brushes"></div>
-<canvas id="canvas"></canvas>
-
-<script src="https://cdn.jsdelivr.net/npm/gifler@0.1.0/dist/gifler.min.js"></script>
-<script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
