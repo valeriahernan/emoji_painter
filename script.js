@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const clearBtn = document.getElementById('clearBtn');
   const fadeBtn = document.getElementById('fadeBtn');
   const saveImageBtn = document.getElementById('saveImage');
-  const shareBtn = document.getElementById('shareBtn');
+
 
   let currentGIF = gifButtons[0].src;
   let brushSize = parseInt(sizeInput.value);
