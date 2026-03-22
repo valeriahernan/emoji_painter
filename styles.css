@@ -1,0 +1,84 @@
+body{
+  margin:0;
+  overflow:hidden;
+  background:linear-gradient(#cceeff,#e6ffe6);
+  font-family:sans-serif;
+}
+
+/* 🔥 TOOLBAR SIEMPRE ENCIMA */
+.toolbar{
+  position:fixed;
+  top:15px;
+  left:50%;
+  transform:translateX(-50%);
+  display:flex;
+  gap:10px;
+  padding:10px;
+  border-radius:20px;
+  background:#ffffffee;
+  backdrop-filter:blur(10px);
+  z-index:1000;
+}
+
+/* GIF BOTONES */
+.gif-btn{
+  width:55px;
+  height:55px;
+  object-fit:contain;
+  background:white;
+  padding:5px;
+  border-radius:10px;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+.gif-btn:hover{
+  transform:scale(1.2);
+}
+
+/* ACTIVO */
+.active{
+  outline:3px solid #7acb88;
+}
+
+/* 🔥 CANVAS DEBAJO */
+#canvas{
+  position:absolute;
+  width:100%;
+  height:100%;
+  z-index:1;
+}
+
+/* GIFS */
+.gif{
+  position:absolute;
+  pointer-events:none;
+  transform-origin:center;
+}
+
+/* ANIMACIÓN */
+@keyframes fallFade{
+  to{
+    transform:translate(var(--x),120px);
+    opacity:0;
+  }
+}
+
+.fall{
+  animation:fallFade 1s ease-out forwards;
+}
+
+/* BOTONES */
+button{
+  border:none;
+  border-radius:10px;
+  padding:5px 12px;
+  cursor:pointer;
+  background:#7acb88;
+  color:white;
+  font-weight:bold;
+}
+
+button:hover{
+  transform:scale(1.05);
+}
