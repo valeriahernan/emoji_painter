@@ -16,7 +16,21 @@ document.addEventListener('DOMContentLoaded', () => {
   let brushSize = parseInt(sizeInput.value);
   let isDrawing = false;
   let fadeEnabled = true;
-
+  
+function getPointerPos(e){
+  const rect = canvas.getBoundingClientRect();
+  if(e.touches) {
+    return {
+      x: e.touches[0].clientX - rect.left,
+      y: e.touches[0].clientY - rect.top
+    };
+  } else {
+    return {
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top
+    };
+  }
+}
   // Ajusta canvas
   function resizeCanvas() {
     if(window.innerWidth < 768){
