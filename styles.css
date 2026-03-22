@@ -49,12 +49,12 @@ body, html {
 
 /* CANVAS */
 #canvas {
+  position: relative;
   flex: 1;
   width: 100%;
-  height: calc(100% - 80px); /* espacio para toolbar */
-  touch-action: none; /* evita scroll al dibujar en móvil */
+  overflow: hidden;
+  touch-action: none; /* evita scroll al pintar en móvil */
 }
-
 
 .gif {
   position: absolute;
@@ -98,13 +98,21 @@ footer {
   bottom: 4px;
   right: 8px;
   font-family: "Microsoft Sans Serif", sans-serif;
-  font-size: 20px;
+  font-size: 14px;
   color: #333;
 }
+
+/* RESPONSIVE MÓVIL */
 @media (max-width: 600px) {
   .toolbar img.gif-btn,
   .brush {
     width: 50px;
     height: 50px;
+  }
+  .toolbar button,
+  .toolbar input[type="range"],
+  .toolbar input[type="file"] {
+    padding: 6px 10px;
+    font-size: 14px;
   }
 }

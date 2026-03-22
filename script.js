@@ -67,29 +67,27 @@ function renderBrushes(){
   });
 }
 
-// Dibujar
-document.addEventListener("pointerdown",(e)=>{
-  if(e.target.closest(".toolbar")) return;
-  drawing = true;
-  draw(e);
-});
-document.addEventListener("pointerup",()=> drawing = false);
-document.addEventListener("pointermove",(e)=>{ if(!drawing) return; draw(e); });
+// FUNCIONES DE DIBUJO
+function getPointerPosition(e){
+  if(e.touches && e.touches.length > 0){
+    return {x: e.touches[0].clientX, y: e.touches[0].clientY, pressure: e.touches[0].force || 1};
+  } else {
+    return {x: e.clientX, y: e.clientY, pressure: e.pressure || 1};
+  }
+}
 
 function draw(e){
+  const pos = getPointerPosition(e);
   const img = document.createElement("img");
   img.className = "gif";
   img.src = currentGif;
 
-  let pressure = e.pressure || 1;
-  if(window.matchMedia("(pointer: coarse)").matches) pressure = e.pressure || 1; // móvil
-
-  let baseSize = document.getElementById("size").value;
-  let size = baseSize * (0.5 + pressure);
+  let baseSize = window.matchMedia("(pointer: coarse)").matches ? 60 : document.getElementById("size").value;
+  let size = baseSize * (0.5 + pos.pressure);
 
   img.style.width = size + "px";
-  img.style.left = e.clientX + "px";
-  img.style.top = e.clientY + "px";
+  img.style.left = pos.x + "px";
+  img.style.top = pos.y + "px";
 
   canvas.appendChild(img);
 
@@ -97,9 +95,19 @@ function draw(e){
     setTimeout(()=>img.remove(),2000);
   }
 
-  lastX = e.clientX;
-  lastY = e.clientY;
+  lastX = pos.x;
+  lastY = pos.y;
 }
+
+// MOUSE + TOUCH EVENTS
+canvas.addEventListener("pointerdown", (e)=>{ drawing=true; draw(e); });
+canvas.addEventListener("pointermove", (e)=>{ if(drawing) draw(e); });
+canvas.addEventListener("pointerup", ()=>drawing=false);
+canvas.addEventListener("pointerleave", ()=>drawing=false);
+
+canvas.addEventListener("touchstart", (e)=>{ e.preventDefault(); drawing=true; draw(e); }, {passive:false});
+canvas.addEventListener("touchmove", (e)=>{ e.preventDefault(); if(drawing) draw(e); }, {passive:false});
+canvas.addEventListener("touchend", (e)=>{ drawing=false; }, {passive:false});
 
 // Botones
 document.getElementById("clearBtn").onclick = ()=> canvas.innerHTML = "";
