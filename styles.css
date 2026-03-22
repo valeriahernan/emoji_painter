@@ -54,3 +54,9 @@ canvas {
     background: #ffffff;
     cursor: crosshair;
 }
+.gif-icon {
+    width: 30px;   /* tamaño del icono */
+    height: 30px;
+    object-fit: contain;
+    pointer-events: none; /* no interfiera con click del botón */
+}
