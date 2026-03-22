@@ -1,29 +1,227 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Emoji Painter</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="https://cdn.jsdelivr.net/npm/gifler/dist/gifler.min.js"></script>
+<meta charset="UTF-8">
+<title>GIF Painter Pro</title>
+
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+
+<link rel="stylesheet" href="styles.css?v=5">
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 </head>
+
 <body>
-  <div id="toolbar">
-    <div id="gifContainer">
-      <img class="gif-btn active" src="https://raw.githubusercontent.com/valeriahernan/emoji_painter/refs/heads/main/gifs/5.gif" alt="GIF 5">
-      <img class="gif-btn" src="https://raw.githubusercontent.com/valeriahernan/emoji_painter/refs/heads/main/gifs/2.gif" alt="GIF 2">
-      <img class="gif-btn" src="https://raw.githubusercontent.com/valeriahernan/emoji_painter/refs/heads/main/gifs/3.gif" alt="GIF 3">
-      <img class="gif-btn" src="https://raw.githubusercontent.com/valeriahernan/emoji_painter/refs/heads/main/gifs/4.gif" alt="GIF 4">
-    </div>
-    <input type="range" id="size" min="10" max="100" value="30">
-    <input type="file" id="upload" accept="image/*">
-    <button id="clearBtn">Limpiar</button>
-    <button id="fadeBtn">Fade: ON</button>
-    <button id="saveImage">Guardar</button>
-  </div>
 
-  <canvas id="canvas"></canvas>
+<div class="toolbar">
+  <img class="gif-btn active" src="https://raw.githubusercontent.com/valeriahernan/emoji_painter/refs/heads/main/gifs/5.gif">
+  <img class="gif-btn" src="https://raw.githubusercontent.com/valeriahernan/emoji_painter/refs/heads/main/gifs/2.gif">
+  <img class="gif-btn" src="https://raw.githubusercontent.com/valeriahernan/emoji_painter/refs/heads/main/gifs/3.gif">
+  <img class="gif-btn" src="https://raw.githubusercontent.com/valeriahernan/emoji_painter/refs/heads/main/gifs/4.gif">
 
-  <script src="script.js"></script>
+  <input type="range" id="size" min="30" max="120" value="60">
+
+  <input type="file" id="upload" accept="image/*">
+  <select id="effectSelect">
+    <option value="normal">Normal</option>
+    <option value="rotate">Rotar</option>
+    <option value="float">Flotar</option>
+    <option value="pulse">Pulso</option>
+  </select>
+
+  <button id="saveBrush">Guardar pincel</button>
+  <button id="clearBtn">Limpiar</button>
+  <button id="fadeBtn">Fade: ON</button>
+  <button id="saveImage">Guardar</button>
+  <button id="shareBtn">Compartir</button>
+</div>
+
+<div id="brushes"></div>
+<div id="canvas"></div>
+
+<script>
+const canvas = document.getElementById("canvas");
+
+let drawing = false;
+let currentGif = document.querySelector(".gif-btn").src;
+let fadeEnabled = true;
+
+let customBrushes = [];
+const maxBrushes = 5;
+
+let lastX = 0;
+let lastY = 0;
+
+document.querySelectorAll(".gif-btn").forEach(btn=>{
+  btn.addEventListener("click",(e)=>{
+    e.stopPropagation();
+    document.querySelectorAll(".gif-btn").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    currentGif = btn.src;
+  });
+});
+
+document.getElementById("upload").addEventListener("change",(e)=>{
+  const file = e.target.files[0];
+  if(!file) return;
+  const url = URL.createObjectURL(file);
+  currentGif = url;
+});
+
+document.getElementById("saveBrush").addEventListener("click",()=>{
+  if(customBrushes.length >= maxBrushes){
+    alert("Máximo 5 pinceles");
+    return;
+  }
+
+  const effect = document.getElementById("effectSelect").value;
+
+  customBrushes.push({ src: currentGif, effect });
+  saveToStorage();
+  renderBrushes();
+});
+
+function renderBrushes(){
+  const container = document.getElementById("brushes");
+  container.innerHTML = "";
+
+  customBrushes.forEach((brush, index)=>{
+    const wrapper = document.createElement("div");
+    wrapper.style.position = "relative";
+
+    const img = document.createElement("img");
+    img.src = brush.src;
+    img.className = "brush";
+
+    img.onclick = ()=>{
+      currentGif = brush.src;
+    };
+
+    const del = document.createElement("button");
+    del.textContent = "✖";
+    del.className = "delete-btn";
+
+    del.onclick = (e)=>{
+      e.stopPropagation();
+      customBrushes.splice(index,1);
+      saveToStorage();
+      renderBrushes();
+    };
+
+    wrapper.appendChild(img);
+    wrapper.appendChild(del);
+    container.appendChild(wrapper);
+  });
+}
+
+function applyEffect(el, effect){
+  switch(effect){
+    case "rotate":
+      el.style.animation = "spin 2s linear infinite";
+      break;
+    case "float":
+      el.style.animation = "float 2s ease-in-out infinite";
+      break;
+    case "pulse":
+      el.style.animation = "pulse 1s ease-in-out infinite";
+      break;
+  }
+}
+
+document.addEventListener("pointerdown",(e)=>{
+  if(e.target.closest(".toolbar")) return;
+  drawing = true;
+  draw(e);
+});
+
+document.addEventListener("pointerup",()=> drawing = false);
+
+document.addEventListener("pointermove",(e)=>{
+  if(!drawing) return;
+  draw(e);
+});
+
+function draw(e){
+  const img = document.createElement("img");
+  img.className = "gif";
+  img.src = currentGif;
+
+  let pressure = e.pressure;
+
+  if(!pressure || pressure === 0){
+    let dx = e.clientX - lastX;
+    let dy = e.clientY - lastY;
+    let speed = Math.sqrt(dx*dx + dy*dy);
+    pressure = Math.min(speed / 20, 1);
+  }
+
+  let baseSize = document.getElementById("size").value;
+  let size = baseSize * (0.5 + pressure);
+
+  img.style.width = size + "px";
+  img.style.left = e.clientX + "px";
+  img.style.top = e.clientY + "px";
+
+  let wind = (Math.random() - 0.5) * 120 * pressure;
+  img.style.setProperty("--x", wind + "px");
+
+  let brush = customBrushes.find(b => b.src === currentGif);
+  if(brush) applyEffect(img, brush.effect);
+
+  canvas.appendChild(img);
+
+  if(fadeEnabled){
+    setTimeout(()=>img.classList.add("fall"),1000);
+    setTimeout(()=>img.remove(),2000);
+  }
+
+  lastX = e.clientX;
+  lastY = e.clientY;
+}
+
+document.getElementById("clearBtn").onclick = ()=> canvas.innerHTML = "";
+
+document.getElementById("fadeBtn").onclick = (e)=>{
+  fadeEnabled = !fadeEnabled;
+  e.target.textContent = fadeEnabled ? "Fade: ON" : "Fade: OFF";
+};
+
+document.getElementById("saveImage").onclick = ()=>{
+  html2canvas(canvas).then(c=>{
+    const link = document.createElement("a");
+    link.download = "arte.png";
+    link.href = c.toDataURL();
+    link.click();
+  });
+};
+
+document.getElementById("shareBtn").onclick = async ()=>{
+  const c = await html2canvas(canvas);
+  c.toBlob(async blob=>{
+    const file = new File([blob],"arte.png",{type:"image/png"});
+    if(navigator.share){
+      navigator.share({ files:[file], title:"Mi arte" });
+    }else{
+      alert("No soportado");
+    }
+  });
+};
+
+function saveToStorage(){
+  localStorage.setItem("brushes", JSON.stringify(customBrushes));
+}
+
+function loadFromStorage(){
+  const data = localStorage.getItem("brushes");
+  if(data){
+    customBrushes = JSON.parse(data);
+    renderBrushes();
+  }
+}
+
+loadFromStorage();
+</script>
+
 </body>
 </html>
