@@ -3,19 +3,26 @@
 <head>
 <meta charset="UTF-8">
 <title>GIF Painter</title>
-<link rel="stylesheet" href="styles.css">
+
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+
+<link rel="stylesheet" href="styles.css?v=2">
 </head>
 
 <body>
 
 <div class="toolbar">
   <img class="gif-btn active" src="https://raw.githubusercontent.com/valeriahernan/emoji_painter/refs/heads/main/gifs/5.gif">
-  <img class="gif-btn" src="https://raw.githubusercontent.com/valeriahernan/emoji_painter/refs/heads/main/gifs/2.gif">
-  <img class="gif-btn" src="https://raw.githubusercontent.com/valeriahernan/emoji_painter/refs/heads/main/gifs/3.gif">
   <img class="gif-btn" src="https://raw.githubusercontent.com/valeriahernan/emoji_painter/refs/heads/main/gifs/4.gif">
+  <img class="gif-btn" src="https://raw.githubusercontent.com/valeriahernan/emoji_painter/refs/heads/main/gifs/3.gif">
+  <img class="gif-btn" src="https://raw.githubusercontent.com/valeriahernan/emoji_painter/refs/heads/main/gifs/2.gif">
 
   <input type="range" id="size" min="30" max="120" value="60">
+
   <button id="clearBtn">Limpiar</button>
+  <button id="fadeBtn">Fade: ON</button>
 </div>
 
 <div id="canvas"></div>
@@ -25,50 +32,38 @@ const canvas = document.getElementById("canvas");
 
 let drawing = false;
 let currentGif = "gifs/flor.gif";
+let fadeEnabled = true;
 
-// presión simulada
 let lastX = 0;
 let lastY = 0;
 
-/* 🔥 FIX CLICK BOTONES */
 document.querySelectorAll(".gif-btn").forEach(btn=>{
   btn.addEventListener("click",(e)=>{
-    e.stopPropagation(); // evita que dibuje al hacer click
-
-    document.querySelectorAll(".gif-btn")
-      .forEach(b=>b.classList.remove("active"));
-
+    e.stopPropagation();
+    document.querySelectorAll(".gif-btn").forEach(b=>b.classList.remove("active"));
     btn.classList.add("active");
-
     currentGif = btn.getAttribute("src");
   });
 });
 
-/* pointer events */
 document.addEventListener("pointerdown",(e)=>{
-  // 🔥 evitar dibujar si haces click en toolbar
   if(e.target.closest(".toolbar")) return;
-
   drawing = true;
   draw(e);
 });
 
-document.addEventListener("pointerup",()=>{
-  drawing = false;
-});
+document.addEventListener("pointerup",()=> drawing = false);
 
 document.addEventListener("pointermove",(e)=>{
   if(!drawing) return;
   draw(e);
 });
 
-/* dibujar */
 function draw(e){
   const img = document.createElement("img");
   img.className = "gif";
   img.src = currentGif;
 
-  // presión real o simulada
   let pressure = e.pressure;
 
   if(!pressure || pressure === 0){
@@ -90,20 +85,26 @@ function draw(e){
 
   canvas.appendChild(img);
 
-  setTimeout(()=>img.classList.add("fall"),1000);
-  setTimeout(()=>img.remove(),2000);
+  if(fadeEnabled){
+    setTimeout(()=>img.classList.add("fall"),1000);
+    setTimeout(()=>img.remove(),2000);
+  }
 
   lastX = e.clientX;
   lastY = e.clientY;
 }
 
-/* limpiar */
 document.getElementById("clearBtn").addEventListener("click",(e)=>{
   e.stopPropagation();
   canvas.innerHTML = "";
+});
+
+document.getElementById("fadeBtn").addEventListener("click",(e)=>{
+  e.stopPropagation();
+  fadeEnabled = !fadeEnabled;
+  e.target.textContent = fadeEnabled ? "Fade: ON" : "Fade: OFF";
 });
 </script>
 
 </body>
 </html>
-<body>

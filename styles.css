@@ -5,7 +5,6 @@ body{
   font-family:sans-serif;
 }
 
-/* 🔥 TOOLBAR SIEMPRE ENCIMA */
 .toolbar{
   position:fixed;
   top:15px;
@@ -20,7 +19,6 @@ body{
   z-index:1000;
 }
 
-/* GIF BOTONES */
 .gif-btn{
   width:55px;
   height:55px;
@@ -36,12 +34,10 @@ body{
   transform:scale(1.2);
 }
 
-/* ACTIVO */
 .active{
   outline:3px solid #7acb88;
 }
 
-/* 🔥 CANVAS DEBAJO */
 #canvas{
   position:absolute;
   width:100%;
@@ -49,14 +45,11 @@ body{
   z-index:1;
 }
 
-/* GIFS */
 .gif{
   position:absolute;
   pointer-events:none;
-  transform-origin:center;
 }
 
-/* ANIMACIÓN */
 @keyframes fallFade{
   to{
     transform:translate(var(--x),120px);
@@ -68,7 +61,6 @@ body{
   animation:fallFade 1s ease-out forwards;
 }
 
-/* BOTONES */
 button{
   border:none;
   border-radius:10px;
