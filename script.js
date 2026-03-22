@@ -1,113 +1,125 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const canvas = document.getElementById('canvas');
-  const ctx = canvas.getContext('2d');
+const canvas = document.getElementById("canvas");
+let drawing = false;
+let currentGif = document.querySelector(".gif-btn").src;
+let fadeEnabled = true;
+let customBrushes = [];
+const maxBrushes = 5;
+let lastX = 0;
+let lastY = 0;
 
-  const gifButtons = document.querySelectorAll('.gif-btn');
-  const sizeInput = document.getElementById('size');
-  const uploadInput = document.getElementById('upload');
-  const clearBtn = document.getElementById('clearBtn');
-  const fadeBtn = document.getElementById('fadeBtn');
-  const saveImageBtn = document.getElementById('saveImage');
+// Selección de GIF
+document.querySelectorAll(".gif-btn").forEach(btn=>{
+  btn.addEventListener("click",(e)=>{
+    e.stopPropagation();
+    document.querySelectorAll(".gif-btn").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    currentGif = btn.src;
+  });
+});
 
-  let currentGIF = gifButtons[0].src;
-  let brushSize = parseInt(sizeInput.value);
-  let isDrawing = false;
-  let fadeEnabled = true;
+// Subir GIF
+document.getElementById("upload").addEventListener("change",(e)=>{
+  const file = e.target.files[0];
+  if(!file) return;
+  const url = URL.createObjectURL(file);
+  currentGif = url;
+});
 
-  // Mantener instancias activas de GIFs animados
-  const gifsActivos = [];
-
-  // Ajustar canvas
-  function resizeCanvas() {
-    if(window.innerWidth < 768){
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight - 60;
-    } else {
-      canvas.width = window.innerWidth * 0.8;
-      canvas.height = window.innerHeight * 0.8;
-    }
+// Guardar pincel
+document.getElementById("saveBrush").addEventListener("click",()=>{
+  if(customBrushes.length >= maxBrushes){
+    alert("Máximo 5 pinceles");
+    return;
   }
-  window.addEventListener('resize', resizeCanvas);
-  resizeCanvas();
+  const effect = "normal";
+  customBrushes.push({ src: currentGif, effect });
+  saveToStorage();
+  renderBrushes();
+});
 
-  // Selección de GIFs
-  gifButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      gifButtons.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      currentGIF = btn.src;
-    });
+// Renderizar pinceles
+function renderBrushes(){
+  const container = document.getElementById("brushes");
+  container.innerHTML = "";
+
+  customBrushes.forEach((brush, index)=>{
+    const wrapper = document.createElement("div");
+    wrapper.style.position = "relative";
+
+    const img = document.createElement("img");
+    img.src = brush.src;
+    img.className = "brush";
+    img.onclick = ()=>{ currentGif = brush.src; };
+
+    const del = document.createElement("button");
+    del.textContent = "✖";
+    del.className = "delete-btn";
+    del.onclick = (e)=>{
+      e.stopPropagation();
+      customBrushes.splice(index,1);
+      saveToStorage();
+      renderBrushes();
+    };
+
+    wrapper.appendChild(img);
+    wrapper.appendChild(del);
+    container.appendChild(wrapper);
   });
+}
 
-  sizeInput.addEventListener('input', () => { brushSize = parseInt(sizeInput.value); });
+// Dibujar
+document.addEventListener("pointerdown",(e)=>{
+  if(e.target.closest(".toolbar")) return;
+  drawing = true;
+  draw(e);
+});
+document.addEventListener("pointerup",()=> drawing = false);
+document.addEventListener("pointermove",(e)=>{ if(!drawing) return; draw(e); });
 
-  clearBtn.addEventListener('click', () => ctx.clearRect(0,0,canvas.width,canvas.height));
+function draw(e){
+  const img = document.createElement("img");
+  img.className = "gif";
+  img.src = currentGif;
 
-  fadeBtn.addEventListener('click', () => {
-    fadeEnabled = !fadeEnabled;
-    fadeBtn.textContent = `Fade: ${fadeEnabled ? 'ON' : 'OFF'}`;
-  });
+  let pressure = e.pressure || 1;
+  if(window.matchMedia("(pointer: coarse)").matches) pressure = e.pressure || 1; // móvil
 
-  saveImageBtn.addEventListener('click', () => {
-    const link = document.createElement('a');
-    link.download = 'mi_dibujo.png';
-    link.href = canvas.toDataURL();
+  let baseSize = document.getElementById("size").value;
+  let size = baseSize * (0.5 + pressure);
+
+  img.style.width = size + "px";
+  img.style.left = e.clientX + "px";
+  img.style.top = e.clientY + "px";
+
+  canvas.appendChild(img);
+
+  if(fadeEnabled){
+    setTimeout(()=>img.remove(),2000);
+  }
+
+  lastX = e.clientX;
+  lastY = e.clientY;
+}
+
+// Botones
+document.getElementById("clearBtn").onclick = ()=> canvas.innerHTML = "";
+document.getElementById("fadeBtn").onclick = (e)=>{
+  fadeEnabled = !fadeEnabled;
+  e.target.textContent = fadeEnabled ? "Fade: ON" : "Fade: OFF";
+};
+document.getElementById("saveImage").onclick = ()=>{
+  html2canvas(canvas).then(c=>{
+    const link = document.createElement("a");
+    link.download = "arte.png";
+    link.href = c.toDataURL();
     link.click();
   });
+};
 
-  uploadInput.addEventListener('change', e => {
-    const file = e.target.files[0];
-    if(!file) return;
-    const img = new Image();
-    img.onload = () => ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-    img.src = URL.createObjectURL(file);
-  });
-
-  // Obtener posición relativa al canvas
-  function getPointerPos(e){
-    const rect = canvas.getBoundingClientRect();
-    if(e.touches){
-      return { x: e.touches[0].clientX - rect.left, y: e.touches[0].clientY - rect.top };
-    } else {
-      return { x: e.clientX - rect.left, y: e.clientY - rect.top };
-    }
-  }
-
-  // Crear nueva instancia GIF animada
-  function drawAnimatedGIF(x, y){
-    gifler(currentGIF).get(anim => {
-      gifsActivos.push({anim, x, y, size: brushSize});
-    });
-  }
-
-  // Eventos de dibujo
-  canvas.addEventListener('mousedown', e => { isDrawing = true; const pos = getPointerPos(e); drawAnimatedGIF(pos.x,pos.y); });
-  canvas.addEventListener('mousemove', e => { if(isDrawing){ const pos = getPointerPos(e); drawAnimatedGIF(pos.x,pos.y); } });
-  canvas.addEventListener('mouseup', () => { isDrawing = false; });
-  canvas.addEventListener('mouseleave', () => { isDrawing = false; });
-
-  canvas.addEventListener('touchstart', e => { e.preventDefault(); isDrawing = true; const pos=getPointerPos(e); drawAnimatedGIF(pos.x,pos.y); });
-  canvas.addEventListener('touchmove', e => { e.preventDefault(); if(isDrawing){ const pos=getPointerPos(e); drawAnimatedGIF(pos.x,pos.y); } });
-  canvas.addEventListener('touchend', e => { e.preventDefault(); isDrawing = false; });
-
-  // Loop de render de GIFs animados + fade
-  function render(){
-    if(fadeEnabled){
-      ctx.fillStyle = 'rgba(206,139,200,0.05)'; // fade color
-      ctx.fillRect(0,0,canvas.width,canvas.height);
-    }
-
-    gifsActivos.forEach(g => {
-      g.anim.animateInCanvas({
-        canvas: canvas,
-        x: g.x - g.size/2,
-        y: g.y - g.size/2,
-        width: g.size,
-        height: g.size
-      });
-    });
-
-    requestAnimationFrame(render);
-  }
-  render();
-});
+// Local storage pinceles
+function saveToStorage(){ localStorage.setItem("brushes", JSON.stringify(customBrushes)); }
+function loadFromStorage(){
+  const data = localStorage.getItem("brushes");
+  if(data){ customBrushes = JSON.parse(data); renderBrushes(); }
+}
+loadFromStorage();

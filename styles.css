@@ -1,96 +1,102 @@
-body{
-  margin:0;
-  overflow:hidden;
-  background:linear-gradient(#cceeff,#e6ffe6);
-  font-family:sans-serif;
+/* WRAPPER VERDE AGUA */
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: 'Fredoka', sans-serif;
+  background: #76EEC6; /* verde agua */
 }
 
-.toolbar{
-  position:fixed;
-  top:10px;
-  left:50%;
-  transform:translateX(-50%);
-  display:flex;
-  gap:8px;
-  padding:10px;
-  border-radius:20px;
-  background:#ffffffee;
-  z-index:1000;
-  flex-wrap:wrap;
+#wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
 }
 
-.gif-btn{
-  width:50px;
-  height:50px;
-  object-fit:contain;
-  background:white;
-  padding:5px;
-  border-radius:10px;
-  cursor:pointer;
+/* TOOLBAR */
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px;
+  background: rgba(255,255,255,0.3);
+  justify-content: center;
+  align-items: center;
 }
 
-#brushes{
-  position:fixed;
-  top:80px;
-  left:50%;
-  transform:translateX(-50%);
-  display:flex;
-  gap:5px;
-  z-index:1000;
+.toolbar img.gif-btn {
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  border-radius: 5px;
+  border: 2px solid transparent;
+  transition: border 0.2s;
 }
 
-.brush{
-  width:40px;
-  height:40px;
-  object-fit:contain;
-  border-radius:8px;
-  cursor:pointer;
+.toolbar img.gif-btn.active {
+  border: 2px solid #8e44ad; /* lila al seleccionar */
 }
 
-.delete-btn{
-  position:absolute;
-  top:-5px;
-  right:-5px;
-  font-size:10px;
-  background:red;
-  color:white;
-  border:none;
-  border-radius:50%;
-  cursor:pointer;
+.toolbar button, 
+.toolbar input[type="range"], 
+.toolbar input[type="file"] {
+  padding: 5px 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  cursor: pointer;
 }
 
-#canvas{
-  position:absolute;
-  width:100%;
-  height:100%;
-  z-index:1;
+/* CANVAS */
+#canvas {
+  position: relative;
+  flex: 1;
+  width: 100%;
+  overflow: hidden;
 }
 
-.gif{
-  position:absolute;
-  pointer-events:none;
+.gif {
+  position: absolute;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
 }
 
-@keyframes fallFade{
-  to{
-    transform:translate(var(--x),120px);
-    opacity:0;
-  }
+/* BRUSHES */
+#brushes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 6px;
+  justify-content: center;
 }
 
-.fall{
-  animation:fallFade 1s ease-out forwards;
+.brush {
+  width: 40px;
+  height: 40px;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
-@keyframes spin{ to{ transform:rotate(360deg);} }
-@keyframes float{ 0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);} }
-@keyframes pulse{ 0%,100%{transform:scale(1);}50%{transform:scale(1.2);} }
+.delete-btn {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #ff4d4d;
+  border: none;
+  border-radius: 50%;
+  color: white;
+  width: 18px;
+  height: 18px;
+  font-size: 12px;
+  cursor: pointer;
+}
 
-button{
-  border:none;
-  border-radius:10px;
-  padding:5px 10px;
-  cursor:pointer;
-  background:#7acb88;
-  color:white;
+/* FOOTER */
+footer {
+  position: fixed;
+  bottom: 4px;
+  right: 8px;
+  font-family: "Microsoft Sans Serif", sans-serif;
+  font-size: 14px;
+  color: #333;
 }
