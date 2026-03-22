@@ -72,16 +72,6 @@ function getPointerPos(e){
     link.click();
   });
 
-  // Compartir
-  shareBtn.addEventListener('click', async () => {
-    try {
-      const blob = await new Promise(resolve => canvas.toBlob(resolve));
-      await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
-      alert('Imagen copiada al portapapeles!');
-    } catch(e){
-      alert('No se pudo compartir, tu navegador no lo soporta.');
-    }
-  });
 
   // Subir imagen
   uploadInput.addEventListener('change', e => {
@@ -92,14 +82,15 @@ function getPointerPos(e){
   });
 
   // Dibujar GIFs centrados verticalmente
-  function draw(x, y) {
-    const img = new Image();
-    img.src = currentGIF;
-    img.onload = () => {
-      const offsetY = (img.height / img.width) * brushSize / 2;
-      ctx.drawImage(img, x - brushSize / 2, y - offsetY, brushSize, brushSize);
-    }
-  }
+function draw(x, y) {
+  gifler(currentGIF).animate({
+    canvas: canvas,
+    x: x - brushSize/2,
+    y: y - brushSize/2,
+    width: brushSize,
+    height: brushSize
+  });
+}
 
   // Eventos de dibujo
   function getPointerPos(e){
