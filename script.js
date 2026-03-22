@@ -48,7 +48,11 @@ uploadInput.addEventListener('change', e => {
 function draw(x, y) {
   const img = new Image();
   img.src = currentGIF;
-  img.onload = () => ctx.drawImage(img, x - brushSize/2, y - brushSize/2, brushSize, brushSize);
+  img.onload = () => {
+    // Calcula offset para centrar visualmente
+    const offsetY = (img.height / img.width) * brushSize / 2; 
+    ctx.drawImage(img, x - brushSize / 2, y - offsetY, brushSize, brushSize);
+  }
 }
 
 // Eventos para desktop y móvil
