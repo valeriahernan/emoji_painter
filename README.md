@@ -1,2 +1,2 @@
-# emoji_painter
+emoji_painter
 an emoji paint sandbox
