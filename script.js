@@ -10,27 +10,28 @@ document.addEventListener('DOMContentLoaded', () => {
   const fadeBtn = document.getElementById('fadeBtn');
   const saveImageBtn = document.getElementById('saveImage');
 
-
   let currentGIF = gifButtons[0].src;
   let brushSize = parseInt(sizeInput.value);
   let isDrawing = false;
   let fadeEnabled = true;
 
-function getPointerPos(e){
-  const rect = canvas.getBoundingClientRect();
-  if(e.touches) {
-    return {
-      x: e.touches[0].clientX - rect.left,
-      y: e.touches[0].clientY - rect.top
-    };
-  } else {
-    return {
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top
-    };
+  // Obtener posición relativa al canvas
+  function getPointerPos(e){
+    const rect = canvas.getBoundingClientRect();
+    if(e.touches){
+      return {
+        x: e.touches[0].clientX - rect.left,
+        y: e.touches[0].clientY - rect.top
+      };
+    } else {
+      return {
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top
+      };
+    }
   }
-}
-  // Ajusta canvas
+
+  // Ajustar canvas
   function resizeCanvas() {
     if(window.innerWidth < 768){
       canvas.width = window.innerWidth;
@@ -45,7 +46,7 @@ function getPointerPos(e){
   window.addEventListener('resize', resizeCanvas);
   resizeCanvas();
 
-  // GIF buttons
+  // Selección de GIFs
   gifButtons.forEach(btn => {
     btn.addEventListener('click', () => {
       gifButtons.forEach(b => b.classList.remove('active'));
@@ -54,11 +55,13 @@ function getPointerPos(e){
     });
   });
 
+  // Cambiar tamaño del pincel
   sizeInput.addEventListener('input', () => { brushSize = parseInt(sizeInput.value); });
 
+  // Limpiar canvas
   clearBtn.addEventListener('click', () => ctx.clearRect(0,0,canvas.width,canvas.height));
 
-  // Fade toggle
+  // Toggle fade
   fadeBtn.addEventListener('click', () => {
     fadeEnabled = !fadeEnabled;
     fadeBtn.textContent = `Fade: ${fadeEnabled ? 'ON' : 'OFF'}`;
@@ -72,40 +75,56 @@ function getPointerPos(e){
     link.click();
   });
 
-
   // Subir imagen
   uploadInput.addEventListener('change', e => {
     const file = e.target.files[0];
+    if(!file) return;
     const img = new Image();
     img.onload = () => ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-    if(file) img.src = URL.createObjectURL(file);
+    img.src = URL.createObjectURL(file);
   });
 
-  // Dibujar GIFs centrados verticalmente
-function draw(x, y) {
-  gifler(currentGIF).animate({
-    canvas: canvas,
-    x: x - brushSize/2,
-    y: y - brushSize/2,
-    width: brushSize,
-    height: brushSize
-  });
-}
-
-  // Eventos de dibujo
-  function getPointerPos(e){
-    if(e.touches) return {x: e.touches[0].clientX, y: e.touches[0].clientY};
-    else return {x: e.clientX, y: e.clientY};
+  // Dibujar GIF como pincel (frame estático)
+  function draw(x, y){
+    const img = new Image();
+    img.src = currentGIF;
+    img.onload = () => {
+      ctx.drawImage(img, x - brushSize/2, y - brushSize/2, brushSize, brushSize);
+    };
   }
 
-  canvas.addEventListener('mousedown', e => {isDrawing = true; draw(e.clientX, e.clientY)});
-  canvas.addEventListener('mousemove', e => {if(isDrawing) draw(e.clientX, e.clientY)});
+  // Eventos de dibujo
+  canvas.addEventListener('mousedown', e => {
+    isDrawing = true;
+    const pos = getPointerPos(e);
+    draw(pos.x, pos.y);
+  });
+  canvas.addEventListener('mousemove', e => {
+    if(isDrawing){
+      const pos = getPointerPos(e);
+      draw(pos.x, pos.y);
+    }
+  });
   canvas.addEventListener('mouseup', () => {isDrawing = false});
   canvas.addEventListener('mouseleave', () => {isDrawing = false});
 
-  canvas.addEventListener('touchstart', e => {e.preventDefault(); isDrawing = true; const pos=getPointerPos(e); draw(pos.x,pos.y)});
-  canvas.addEventListener('touchmove', e => {e.preventDefault(); if(isDrawing){const pos=getPointerPos(e); draw(pos.x,pos.y)}});
-  canvas.addEventListener('touchend', e => {e.preventDefault(); isDrawing = false});
+  canvas.addEventListener('touchstart', e => {
+    e.preventDefault();
+    isDrawing = true;
+    const pos = getPointerPos(e);
+    draw(pos.x, pos.y);
+  });
+  canvas.addEventListener('touchmove', e => {
+    e.preventDefault();
+    if(isDrawing){
+      const pos = getPointerPos(e);
+      draw(pos.x, pos.y);
+    }
+  });
+  canvas.addEventListener('touchend', e => {
+    e.preventDefault();
+    isDrawing = false;
+  });
 
   // Loop de fade
   function fadeCanvas() {
